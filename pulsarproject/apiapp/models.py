@@ -1,4 +1,10 @@
+import os
+
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+from PIL import Image
 
 
 class Product(models.Model):
@@ -13,24 +19,35 @@ class Product(models.Model):
     name = models.CharField('name', max_length=255)
     sku = models.CharField('sku', max_length=255, unique=True)
     price = models.DecimalField('price',  max_digits=10, decimal_places=2)
-    INSTOCK = 'in_stock'
-    ONREQUEST = 'on_request'
+    IN_STOCK = 'in_stock'
+    ON_REQUEST = 'on_request'
     EXPECTED = 'expected'
-    OUTOFSTOCK = 'out_of_stock'
-    NOTPRODUCE = 'not_produce'
+    OUT_OFSTOCK = 'out_of_stock'
+    NOT_PRODUCE = 'not_produce'
     CHOICES = [
-        (INSTOCK, 'В наличии'),
-        (ONREQUEST, 'Под заказ'),
+        (IN_STOCK, 'В наличии'),
+        (ON_REQUEST, 'Под заказ'),
         (EXPECTED, 'Ожидается поступление'),
-        (OUTOFSTOCK, 'Нет в наличии'),
-        (NOTPRODUCE, 'Не производится'),
+        (OUT_OFSTOCK, 'Нет в наличии'),
+        (NOT_PRODUCE, 'Не производится'),
     ]
     status = models.CharField(
                               max_length=32,
                               choices=CHOICES,
-                              default=INSTOCK,
+                              default=IN_STOCK,
                               )
-    image = models.ImageField('image')
+    image = models.ImageField('image', upload_to="images")
 
     def __str__(self):
         return self.name
+
+
+@receiver(post_save, sender=Product)
+def convert_to_webp(sender, instance, **kwargs):
+    path = instance.image.path
+    image = Image.open(path)
+    image = image.convert("RGB")
+    path, filename = os.path.split(path)
+    filename = filename.split(".")[0]
+    filename = f"{filename}.webp"
+    image.save(os.path.join(path, filename), "webp")
