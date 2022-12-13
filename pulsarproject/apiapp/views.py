@@ -17,6 +17,11 @@ class GetProduct(generics.RetrieveAPIView):
 
 
 class ListProducts(generics.ListAPIView):
+    """
+    Show list of products. You can use `filter` parameter for filtering by
+    status field. Also, you can use `name` or `sku` parameters for searching
+    products. Example: http://127.0.0.1:8000/api/products?sku=first&filter=in_stock
+    """
     queryset = Product.objects.all()
     serializer_class = ListProductSerializer
 
