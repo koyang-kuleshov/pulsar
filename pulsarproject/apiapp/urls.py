@@ -3,7 +3,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-from .views import CreateProduct, ListProducts, GetProduct
+from .views import CreateProduct, GetProduct, ListProducts, main
 
 
 schema_view = get_schema_view(
@@ -18,6 +18,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('health-check/', main, name='health-check'),
     path('products/', ListProducts.as_view(), name='list-products'),
     path('get/product/<int:pk>', GetProduct.as_view(), name='get-product'),
     path('create/product/', CreateProduct.as_view(), name='create-product'),

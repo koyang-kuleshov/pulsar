@@ -1,7 +1,14 @@
 from rest_framework import generics
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Product
 from .serializers import ListProductSerializer, ProductSerializer
+
+
+@api_view()
+def main(*args, **kwargs):
+    return Response({"message": "OK"})
 
 
 class GetProduct(generics.RetrieveAPIView):
