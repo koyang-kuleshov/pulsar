@@ -1,3 +1,4 @@
+import logging as log
 import os
 
 from django.db import models
@@ -45,8 +46,12 @@ class Product(models.Model):
 @receiver(post_save, sender=Product)
 def convert_to_webp(sender, instance, **kwargs):
     path = instance.image.path
-    image = Image.open(path)
-    image = image.convert("RGB")
+    try:
+        image = Image.open(path)
+    except OSError as er:
+        log.error(f"Error while opening file: {er}")
+        raise er
+    image.convert("RGB")
     path, filename = os.path.split(path)
     filename = filename.split(".")[0]
     filename = f"{filename}.webp"
