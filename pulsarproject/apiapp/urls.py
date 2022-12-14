@@ -18,7 +18,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('products', ListProducts.as_view(), name='list-products'),
+    path('products/', ListProducts.as_view(), name='list-products'),
     path('get/product/<int:pk>', GetProduct.as_view(), name='get-product'),
     path('create/product/', CreateProduct.as_view(), name='create-product'),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',
